@@ -6,34 +6,37 @@
 <style>
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #111, #1a1a1a);
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  color: #fff;
 }
 .card {
   background: #111;
-  padding: 30px;
+  padding: 25px;
   border-radius: 16px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
   text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
 }
-h2 {
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-p {
-  opacity: 0.7;
-  margin-bottom: 20px;
+button {
+  padding: 14px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #00bcd4;
+  cursor: pointer;
+  font-weight: bold;
 }
 video {
-  width: 360px;
-  border-radius: 14px;
+  width: 340px;
+  max-width: 90vw;
+  border-radius: 12px;
   background: #000;
-  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+  margin-top: 15px;
+  display: none;
 }
 </style>
 </head>
@@ -41,21 +44,35 @@ video {
 
 <div class="card">
   <h2>Exam In Progress</h2>
-  <p>Camera is being monitored</p>
+  <p>Tap to start camera</p>
+  <button id="startBtn">Start Exam</button>
   <video id="preview" autoplay muted playsinline></video>
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script>
-(async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-  document.getElementById("preview").srcObject = stream;
+const btn = document.getElementById("startBtn");
+const video = document.getElementById("preview");
 
-  const peer = new Peer();
-  peer.on("open", () => {
-    peer.call("teacher-exam-room-1", stream);
-  });
-})();
+btn.onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false
+    });
+
+    video.srcObject = stream;
+    video.style.display = "block";
+    btn.style.display = "none";
+
+    const peer = new Peer();
+    peer.on("open", () => {
+      peer.call("teacher-exam-room-1", stream);
+    });
+  } catch (e) {
+    alert("Camera permission required");
+  }
+};
 </script>
 
 </body>
